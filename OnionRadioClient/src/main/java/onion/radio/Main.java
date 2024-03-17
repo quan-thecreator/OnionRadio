@@ -54,7 +54,12 @@ public class Main {
         System.out.println(thisStation.name()); System.out.println(thisStation.description());
         InputStream bufferedIn = new BufferedInputStream(connection.getInputStream());
         AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(bufferedIn);
-        Clip clip = AudioSystem.getClip();
+        Mixer.Info[] mixerInfo = AudioSystem.getMixerInfo();
+        Mixer.Info info = mixerInfo[0];
+
+        System.out.println(String.format("Name [%s] \n Description [%s]\n\n", info.getName(), info.getDescription()));
+        System.out.println(info.getDescription());
+        Clip clip = AudioSystem.getClip(info);
         clip.open(audioInputStream);
         clip.start();
 
