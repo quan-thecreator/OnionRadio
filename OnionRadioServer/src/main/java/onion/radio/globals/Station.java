@@ -1,4 +1,6 @@
 package onion.radio.globals;
 
-public record Station(String name, String description) {
+import java.io.Serializable;
+
+public record Station(String name, String description) implements Serializable {
 }

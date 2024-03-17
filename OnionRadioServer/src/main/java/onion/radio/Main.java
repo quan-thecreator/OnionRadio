@@ -1,11 +1,46 @@
 package onion.radio;
 
+import de.codeshelf.consoleui.prompt.ConsolePrompt;
+import de.codeshelf.consoleui.prompt.InputResult;
+import de.codeshelf.consoleui.prompt.PromtResultItemIF;
+import de.codeshelf.consoleui.prompt.builder.PromptBuilder;
+import onion.radio.globals.Station;
+import org.apache.commons.io.IOUtils;
+import org.fusesource.jansi.AnsiConsole;
+
+import javax.sound.sampled.*;
+import java.io.*;
+import java.nio.file.Path;
+import java.util.HashMap;
+import java.util.Scanner;
+
+import static org.fusesource.jansi.Ansi.ansi;
+
 public class Main {
     private static final Scanner sc = new Scanner(System.in);
     public static InputStream audioOutBytes;
     public static Station stationRecord;
     public static void main(String[] args) {
-        System.out.println("Hello world!");
+        System.out.println("Welcome to the Onion radio Station Server");
+        try{
+            int port = queryPort();
+            File fileToBroadCast = getAudioFile();
+            if(!fileToBroadCast.exists()) throw new RuntimeException();
+            int loops = getNumberOfTimesToLoop();
+            String desc = getDescription(); String title = getTitle();
+            stationRecord = new Station(title, desc);
+            FileInputStream fileInputStream = new FileInputStream(fileToBroadCast);
+            InputStream bufferedIn = new BufferedInputStream(fileInputStream);
+
+            AudioInputStream audioStream = AudioSystem.getAudioInputStream(bufferedIn);
+            audioOutBytes=audioStream;
+
+            finalValediction();
+            new ServerThread(port).start();
+        }catch (Exception e){
+            e.printStackTrace();
+            throw new RuntimeException("You done goofed up lad!");
+        }
     }
     private static int getNumberOfTimesToLoop(){
         System.out.println("How many times do you want the audio to be looped?");
